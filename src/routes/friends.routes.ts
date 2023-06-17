@@ -8,6 +8,7 @@ const friendsRouter = Router();
 friendsRouter.use(auth);
 
 friendsRouter.get("/", FriendsController.getUserFriends);
+friendsRouter.get("/elderly-infos/:id", FriendsController.getElderlyInfos);
 friendsRouter.post("/request/send/:id", FriendsController.sendFriendRequest);
 friendsRouter.patch(
   "/request/decline/:id",

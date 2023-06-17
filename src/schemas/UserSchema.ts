@@ -57,7 +57,6 @@ const userSchema = new Schema<OutputUserDTO>(
     },
     sex: {
       type: String,
-      required: true,
     },
     emergencyContact: {
       type: Object,

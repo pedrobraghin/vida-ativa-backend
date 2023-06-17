@@ -1,3 +1,4 @@
+import { GetElderlyInfosService } from "./GetElderlyInfosService";
 import { Request, Response, NextFunction } from "express";
 
 import {
@@ -15,6 +16,12 @@ import { CatchExpressError } from "../../decorators/CatchExpressErrors";
 import { DeleteFriendRequestService } from "./DeleteFriendRequestService";
 import { UpdateFriendRequestService } from "./UpdateFriendRequestService";
 import { IFriendsRepository } from "../../repositories/IFriendsRepository";
+import { AccountTypes, OutputUserDTO } from "../../@types/UserTypes";
+import ContactsRepository from "../contacts/ContactsRepository";
+import AppointmentsRepository from "../appointments/AppointmentsRepository";
+import EventsRepository from "../events/EventsRepository";
+import MedicationsRepository from "../medications/MedicationsRepository";
+import { UsersRepository } from "../user/UsersRepository";
 
 class FriendsController {
   constructor(private friendsRepository: IFriendsRepository) {}
@@ -158,6 +165,35 @@ class FriendsController {
 
     return res.status(EStatusCode.NO_CONTENT).json({
       status: "success",
+    });
+  }
+
+  @CatchExpressError
+  async getElderlyInfos(req: Request, res: Response, _next: NextFunction) {
+    const { id } = req.params;
+    const user: OutputUserDTO = req.app.locals.user;
+
+    if (user.accountType === AccountTypes.ELDERLY) {
+      return res.status(EStatusCode.FORBIDDEN).json({
+        status: "fails",
+        message: "You are not authorized to perform this action.",
+      });
+    }
+
+    const getElderlyInfosService = new GetElderlyInfosService(
+      this.friendsRepository,
+      ContactsRepository,
+      AppointmentsRepository,
+      EventsRepository,
+      MedicationsRepository,
+      UsersRepository
+    );
+
+    const data = await getElderlyInfosService.execute(id, user._id.toString());
+
+    return res.status(EStatusCode.OK).json({
+      status: "success",
+      data,
     });
   }
 }

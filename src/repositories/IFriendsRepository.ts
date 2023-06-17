@@ -37,4 +37,5 @@ export interface IFriendsRepository {
     id: string,
     userId: string
   ): Promise<OutputUserFriendDTO | null>;
+  verifyFriendship(userOne: string, userTwo: string): Promise<boolean>;
 }

@@ -95,6 +95,16 @@ export class MongoFriendsRepository implements IFriendsRepository {
     return request;
   }
 
+  async verifyFriendship(userOne: string, userTwo: string): Promise<boolean> {
+    const alreadyFriends = await UserFriendsSchema.findOne({
+      $or: [
+        { userOne, userTwo },
+        { userOne: userTwo, userTwo: userOne },
+      ],
+    });
+    return !!alreadyFriends;
+  }
+
   async acceptFriendRequest(
     id: string,
     userId: string

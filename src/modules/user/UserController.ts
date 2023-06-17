@@ -17,6 +17,7 @@ import { JWTHandler } from "../../jwt/JWTHandler";
 import { GetUserService } from "./GetUserService";
 import { DeleteUserService } from "./DeleteUserService";
 import { GetUserByEmailService } from "./GetUserByEmailService";
+import { UpdateUserService } from "./UpdateUserService";
 
 class UsersController {
   constructor(private usersRepository: IUsersRepository) {}
@@ -132,13 +133,37 @@ class UsersController {
   @CatchExpressError
   async deleteUser(req: Request, res: Response, _next: NextFunction) {
     const userId = req.app.locals.user._id.toString();
+    const { password } = req.body;
 
     const deleteUserService = new DeleteUserService(this.usersRepository);
-    const deletedUser = await deleteUserService.execute(userId);
+    const deletedUser = await deleteUserService.execute(userId, password);
 
     return res.status(EStatusCode.NO_CONTENT).json({
       status: "success",
       data: deletedUser,
+    });
+  }
+
+  @CatchExpressError
+  async updateUser(req: Request, res: Response, _next: NextFunction) {
+    const userId = req.app.locals.user._id.toString();
+    const input: InputUserDTO = req.body;
+
+    if (req.file) {
+      const host = req.get("host");
+      const imageUrl = `http://${host}/${req.file.filename}`;
+      input.img = {
+        regular: imageUrl,
+      };
+      console.log(imageUrl);
+    }
+
+    const updateUserService = new UpdateUserService(this.usersRepository);
+    const updatedUser = await updateUserService.execute(userId, input);
+
+    return res.status(EStatusCode.NO_CONTENT).json({
+      status: "success",
+      data: updatedUser,
     });
   }
 }
