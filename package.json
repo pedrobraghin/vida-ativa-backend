@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "vitest",
-    "dev": "tsnd --transpile-only --rs --respawn ./src/index.ts "
+    "dev": "tsnd --transpile-only --rs --respawn ./src/index.ts ",
+    "start": "node ./dist/index.js",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
