@@ -28,6 +28,7 @@ class FriendsController {
     );
     const user = req.app.locals.user;
     const input: InputFriendRequestDTO = {
+      receiver: id,
       recipientId: id,
       sender: user._id.toString(),
       user,
